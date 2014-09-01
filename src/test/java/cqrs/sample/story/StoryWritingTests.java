@@ -2,8 +2,6 @@ package cqrs.sample.story;
 
 import static org.easymock.EasyMock.createMockBuilder;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItems;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +24,7 @@ import cqrs.sample.story.Command.NoSuchStoryException;
 import cqrs.sample.story.Command.UpdateStoryText;
 import cqrs.sample.story.Domain.StoryAggregate;
 import cqrs.sample.story.Domain.StoryAlreadyCreatedException;
+import cqrs.sample.story.Domain.StoryBuilder;
 import cqrs.sample.story.Events.Event;
 import cqrs.sample.story.Storage.StoriesRepository;
 
@@ -40,19 +39,21 @@ public class StoryWritingTests  extends AbstractBenchmark  {
 	public void setup() {
 		_story = createMockBuilder(StoryAggregate.class)
 				.withConstructor(UUID.class, String.class)
-				.withArgs(_guid, "This is a story.").createMock();
+				.withArgs(_guid, "This is a story.")
+				.createMock();
 	}
 
 	@Test
-	@BenchmarkOptions(benchmarkRounds = 200000, warmupRounds = 0)
+	@BenchmarkOptions(benchmarkRounds = 20000, warmupRounds = 0)
 	public void should_write_story_to_repository() throws Exception {
+		UUID guid = UUID.randomUUID();
 		String storyText_ = "This is a story.";
-		StoryAggregate story_ = new StoryAggregate(_guid, "a");
+		StoryAggregate story_ = StoryBuilder.getInstance().setStory(storyText_).setId(guid).create();
 		CommandBase<CreateStory> command = new CommandBase<CreateStory>(
-				new CreateStory(_guid, storyText_, story_));
+				new CreateStory(guid, storyText_, story_));
 		command.execute();
-		assertThat(StoriesRepository.getStory(_guid).getId(),
-				is(equalTo(_guid)));
+		assertThat(StoriesRepository.getStory(guid).getId(),
+				is(equalTo(guid)));
 	}
 
 	@Test(expected = NoSuchStoryException.class)

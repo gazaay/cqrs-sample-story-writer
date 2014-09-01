@@ -58,4 +58,9 @@ public class StoriesRepository {
 		return events;
 	}
 
+	public static boolean hasStory(UUID aggregateId) {
+		List<Event> events = _eventSources.get(aggregateId);
+		return events!=null;
+	}
+
 }
