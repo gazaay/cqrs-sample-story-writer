@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<clay-model clay-version="2.0.1">
+<database-model author="" begin-script="" end-script="" id="bc42659:14824c078ba:-8000" name="dbModel" sql-dialect-id="jp.azzurri.clay.dialect.HSQLDB_1_7_0_Dialect" version="1.0">
+<schema-list>
+<schema id="bc42659:14824c078ba:-7ffd" name="DEFAULT_SCHEMA">
+<table-list>
+<table id="bc42659:14824c078ba:-7fff" name="EventSources">
+<column-list>
+<column auto-increment="false" column-size="38" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7ff7" mandatory="false" name="id">
+<data-type name="CHAR" selected-variant-pattern="CHAR(%n)"/>
+</column>
+<column auto-increment="false" column-size="50" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7ff6" mandatory="false" name="type">
+<data-type name="VARCHAR" selected-variant-pattern="VARCHAR(%n)"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7ff5" mandatory="false" name="version">
+<data-type name="INT" selected-variant-pattern="INT"/>
+</column>
+</column-list>
+<primary-key id="bc42659:14824c078ba:-7ffe" name="PK_EVENTSOURCES"/>
+</table>
+<table id="bc42659:14824c078ba:-7ffc" name="Events">
+<column-list>
+<column auto-increment="false" column-size="38" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fea" mandatory="false" name="id">
+<data-type name="CHAR" selected-variant-pattern="CHAR(%n)"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fe9" mandatory="false" name="timeStamp">
+<data-type name="TIMESTAMP" selected-variant-pattern="TIMESTAMP"/>
+</column>
+<column auto-increment="false" column-size="50" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fe8" mandatory="false" name="name">
+<data-type name="VARCHAR" selected-variant-pattern="VARCHAR(%n)"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fe7" mandatory="false" name="version">
+<data-type name="INT" selected-variant-pattern="INT"/>
+</column>
+<column auto-increment="false" column-size="38" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fe6" mandatory="false" name="eventSourceId">
+<data-type name="CHAR" selected-variant-pattern="CHAR(%n)"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fe3" mandatory="false" name="sequence">
+<data-type name="INT" selected-variant-pattern="INT"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="bc42659:14824c078ba:-7fe2" mandatory="false" name="data">
+<data-type name="VARCHAR" selected-variant-pattern="VARCHAR(%n)"/>
+</column>
+</column-list>
+<primary-key id="bc42659:14824c078ba:-7ffa" name="PK_EVENTS"/>
+</table>
+</table-list>
+</schema>
+</schema-list>
+</database-model>
+<diagram>
+<table-figure height="91" refid="bc42659:14824c078ba:-7fff" width="115" x="152" y="79"/>
+<table-figure height="146" refid="bc42659:14824c078ba:-7ffc" width="162" x="321" y="56"/>
+</diagram>
+</clay-model>
