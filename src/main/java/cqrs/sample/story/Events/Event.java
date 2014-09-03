@@ -5,7 +5,7 @@ import java.util.UUID;
 public class Event implements IEvent {
 	private UUID _eventIdentifier;
 	private UUID _eventSourceId;
-	private int _version;
+	private Integer _version;
 
 	public Event() {
 		_eventIdentifier = UUID.randomUUID();
@@ -27,11 +27,11 @@ public class Event implements IEvent {
 		_eventSourceId = guid;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(Integer version) {
 		_version = version;
 	}
 
-	public int getVersion() {
+	public Integer getVersion() {
 		return _version;
 	}
 

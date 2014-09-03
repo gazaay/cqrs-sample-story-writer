@@ -10,7 +10,8 @@ public class StoryBuilder {
 	private String _storyText;
 	private UUID _guid;
 
-	public StoryAggregate create() throws NoSuchStoryException, StoryAlreadyCreatedException {
+	public StoryAggregate create() throws NoSuchStoryException,
+			StoryAlreadyCreatedException {
 		if (StoriesRepository.hasStory(_guid)) {
 			throw new StoryAlreadyCreatedException();
 		}
@@ -27,9 +28,5 @@ public class StoryBuilder {
 		return this;
 	}
 
-	public static StoryBuilder getInstance() {
-		StoryBuilder result = new StoryBuilder();
-		return result;
-	}
 
 }

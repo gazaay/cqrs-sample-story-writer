@@ -17,19 +17,18 @@ public class StoryAggregate {
 	private UUID _guid_story;
 	private String _storyText;
 	private List<Event> _events;
-	private int _version;
+	private Integer _version;
 
 	public StoryAggregate(UUID guid, String stroryText) {
 		//TODO: Fail if repository already exists
 		setId(guid);
-		_storyText = stroryText;
+		setStoryText(stroryText);
 		_events = new ArrayList<Event>();
-		setVersion(0);
 	}
 
 	public StoryCreated handle(CreateStory createStory) throws StoryAlreadyCreatedException {
 		System.out.println("Handling Event with content: " +createStory.getStoryText() + " With Version: " + getVersion());
-		if ( getVersion() > 0 ) {
+		if (getVersion() != null && getVersion() > 0 ) {
 			throw new StoryAlreadyCreatedException();
 		}
 		return new StoryCreated(getId(), createStory.getStoryText(), getVersion());
@@ -42,13 +41,13 @@ public class StoryAggregate {
 	
 	
 	public void apply(StoryCreated event){
-		_storyText = event.getStoryText();
+		setStoryText(event.getStoryText());
 		_events.add(event);
 	}
 
 
 	public void apply(StoryUpdated event) {
-		_storyText = event.getStoryText();
+		setStoryText(event.getStoryText());
 		_events.add(event);
 	}
 
@@ -56,9 +55,8 @@ public class StoryAggregate {
 	public void commit() {
 		for (Event event: _events) {
 			//TODO: potentially need to handle optimistic lock here.
-			setVersion(getVersion() + 1);
 			event.setVersion(getVersion());
-			StoriesRepository.addEvents(getId(), event);
+			setVersion(StoriesRepository.addEvents(getId(), event));
 			System.out.println("Saving events with ID:" + event.getEventSourceId() + " and version " + event.getVersion());
 		}
 		_events.clear();
@@ -76,12 +74,20 @@ public class StoryAggregate {
 		return StoriesRepository.getStory(_guid);
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(Integer version) {
 		this._version = version;
 	}
 
-	public int getVersion() {
+	public Integer getVersion() {
 		return _version;
+	}
+
+	public void setStoryText(String _storyText) {
+		this._storyText = _storyText;
+	}
+
+	public String getStoryText() {
+		return _storyText;
 	}
 
 	
