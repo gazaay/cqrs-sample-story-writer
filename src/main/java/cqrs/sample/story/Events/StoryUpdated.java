@@ -5,9 +5,10 @@ import java.util.UUID;
 public class StoryUpdated extends Event {
 	private String _storyText;
 
-	public StoryUpdated(UUID id, String storyText, int _version) {
+	public StoryUpdated(UUID id, String storyText, Integer version) {
 		_storyText = storyText;
 		super.setEventSourceId(id);
+		super.setVersion(version);
 	}
 
 	public void setStoryText(String _storyText) {

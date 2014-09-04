@@ -19,45 +19,67 @@ public class StoryAggregate {
 	private List<Event> _events;
 	private Integer _version;
 
-	public StoryAggregate(UUID guid, String stroryText) {
-		//TODO: Fail if repository already exists
+	public static StoryAggregate build(UUID guid) throws NoSuchStoryException {
+		if (StoriesRepository.hasStory(guid)) {
+			return StoriesRepository.getStory(guid);
+		} else {
+			return new StoryAggregate(guid, "");
+		}
+	}
+
+	public static StoryAggregate getNewInstance(UUID guid) {
+		return new StoryAggregate(guid, "");
+	}
+
+	private StoryAggregate(UUID guid, String stroryText) {
+		// TODO: Fail if repository already exists
 		setId(guid);
 		setStoryText(stroryText);
 		_events = new ArrayList<Event>();
 	}
 
-	public StoryCreated handle(CreateStory createStory) throws StoryAlreadyCreatedException {
-		System.out.println("Handling Event with content: " +createStory.getStoryText() + " With Version: " + getVersion());
-		if (getVersion() != null && getVersion() > 0 ) {
+	public StoryCreated handle(CreateStory createStory)
+			throws StoryAlreadyCreatedException {
+		System.out
+				.println("Handling Event with content: "
+						+ createStory.getStoryText() + " With Version: "
+						+ getVersion());
+		if (getVersion() != null && getVersion() > 0) {
 			throw new StoryAlreadyCreatedException();
 		}
-		return new StoryCreated(getId(), createStory.getStoryText(), getVersion());
+		return new StoryCreated(getId(), createStory.getStoryText(),
+				getVersion());
 	}
-	
+
 	public StoryUpdated handle(UpdateStoryText updateStoryText) {
-		System.out.println("Handling update Event with content: " +updateStoryText.getStoryText() + " With Version: " + getVersion());
-		return new StoryUpdated(getId(), updateStoryText.getStoryText(), getVersion());
+		System.out.println("Handling update Event with content: "
+				+ updateStoryText.getStoryText() + " With Version: "
+				+ getVersion());
+		return new StoryUpdated(getId(), updateStoryText.getStoryText(),
+				getVersion());
 	}
-	
-	
-	public void apply(StoryCreated event){
+
+	public void apply(StoryCreated event) {
 		setStoryText(event.getStoryText());
 		_events.add(event);
 	}
-
 
 	public void apply(StoryUpdated event) {
 		setStoryText(event.getStoryText());
 		_events.add(event);
 	}
 
-	
 	public void commit() {
-		for (Event event: _events) {
-			//TODO: potentially need to handle optimistic lock here.
-			event.setVersion(getVersion());
-			setVersion(StoriesRepository.addEvents(getId(), event));
-			System.out.println("Saving events with ID:" + event.getEventSourceId() + " and version " + event.getVersion());
+		for (Event event : _events) {
+			if (!event.isApplied()) {
+				// TODO: potentially need to handle optimistic lock here.
+				event.setVersion(getVersion());
+				setVersion(StoriesRepository.addEvents(getId(), event));
+				event.applied();
+				System.out.println("Saving events with ID:"
+						+ event.getEventSourceId() + " and version "
+						+ event.getVersion());
+			}
 		}
 		_events.clear();
 	}
@@ -70,7 +92,8 @@ public class StoryAggregate {
 		return _guid_story;
 	}
 
-	public static StoryAggregate getAggregateFromHistory(UUID _guid) throws NoSuchStoryException {
+	public static StoryAggregate getAggregateFromHistory(UUID _guid)
+			throws NoSuchStoryException {
 		return StoriesRepository.getStory(_guid);
 	}
 
@@ -89,7 +112,5 @@ public class StoryAggregate {
 	public String getStoryText() {
 		return _storyText;
 	}
-
-	
 
 }

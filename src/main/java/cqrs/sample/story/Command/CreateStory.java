@@ -24,7 +24,12 @@ public class CreateStory implements ICommand {
 		_guid = guid;
 		setStoryText(storyText);
 		if (_story == null) {
-			_story = new StoryAggregate(_guid, storyText);
+			try {
+				_story = StoryAggregate.build(_guid);
+			} catch (NoSuchStoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		_story = story; 
 	}
