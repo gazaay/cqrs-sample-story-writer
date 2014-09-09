@@ -18,7 +18,35 @@ public class StoryAggregate {
 	private String _storyText;
 	private List<Event> _events;
 	private Integer _version;
+	public static class StoryBuilder {
 
+
+		private String _storyText;
+		private UUID _guid;
+
+		public StoryBuilder() {
+		}
+
+		public StoryAggregate create() throws NoSuchStoryException,
+				StoryAlreadyCreatedException {
+			if (StoriesRepository.hasStory(_guid)) {
+				throw new StoryAlreadyCreatedException();
+			}
+			return new StoryAggregate(_guid, _storyText);
+		}
+
+		public StoryBuilder setStory(String storyText) {
+			_storyText = storyText;
+			return this;
+		}
+
+		public StoryBuilder setId(UUID guid) {
+			_guid = guid;
+			return this;
+		}
+
+
+	}
 	public static StoryAggregate build(UUID guid) throws NoSuchStoryException {
 		if (StoriesRepository.hasStory(guid)) {
 			return StoriesRepository.getStory(guid);
@@ -45,7 +73,7 @@ public class StoryAggregate {
 						+ createStory.getStoryText() + " With Version: "
 						+ getVersion());
 		if (getVersion() != null && getVersion() > 0) {
-			throw new StoryAlreadyCreatedException();
+			throw new StoryAlreadyCreatedException("The Story already created with the same GUID. Please create a new story with new GUID instead.");
 		}
 		return new StoryCreated(getId(), createStory.getStoryText(),
 				getVersion());

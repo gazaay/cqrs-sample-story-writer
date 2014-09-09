@@ -27,7 +27,7 @@ import cqrs.sample.story.Command.NoSuchStoryException;
 import cqrs.sample.story.Command.UpdateStoryText;
 import cqrs.sample.story.Domain.StoryAggregate;
 import cqrs.sample.story.Domain.StoryAlreadyCreatedException;
-import cqrs.sample.story.Domain.StoryBuilder;
+import cqrs.sample.story.Domain.StoryAggregate.StoryBuilder;
 import cqrs.sample.story.Events.Event;
 import cqrs.sample.story.Storage.StoriesRepository;
 
@@ -47,8 +47,9 @@ public class StoryWritingTests extends AbstractBenchmark {
 	public void should_write_story_to_repository() throws Exception {
 		UUID guid = UUID.randomUUID();
 		String storyText_ = "This is a story.";
-		StoryAggregate story_ = new StoryBuilder().setStory(storyText_)
-				.setId(guid).create();
+		StoryAggregate.StoryBuilder builder = new StoryAggregate.StoryBuilder();
+		StoryAggregate story_ = builder.setStory(storyText_).setId(guid)
+				.create();
 		CommandBase<CreateStory> command = new CommandBase<CreateStory>(
 				new CreateStory(guid, storyText_, story_));
 		command.execute();
@@ -78,7 +79,7 @@ public class StoryWritingTests extends AbstractBenchmark {
 	@Test
 	public void should_story_written_with_two_versions() throws Exception {
 		UUID guid = UUID.randomUUID();
-		StoryAggregate story_ =StoryAggregate.build(guid);
+		StoryAggregate story_ = StoryAggregate.build(guid);
 		String storyText_ = "Nothing to add";
 		CommandBase<CreateStory> command = new CommandBase<CreateStory>(
 				new CreateStory(guid, storyText_, story_));
@@ -104,7 +105,7 @@ public class StoryWritingTests extends AbstractBenchmark {
 		UUID guid = UUID.randomUUID();
 		// build object
 		String storyText_ = "This is a story.";
-		StoryAggregate story_ =StoryAggregate.build(guid);
+		StoryAggregate story_ = StoryAggregate.build(guid);
 		CommandBase command = new CommandBase<CreateStory>(new CreateStory(
 				guid, storyText_, story_));
 		command.execute();
@@ -121,9 +122,10 @@ public class StoryWritingTests extends AbstractBenchmark {
 	}
 
 	@Test
-//	@BenchmarkOptions(benchmarkRounds = 5000, warmupRounds = 10, concurrency = 3)
+	// @BenchmarkOptions(benchmarkRounds = 5000, warmupRounds = 10, concurrency
+	// = 3)
 	public void should_hit_optimistic_lock() {
-//		System.out.println("test");
+		// System.out.println("test");
 	}
 
 	@Test
@@ -131,26 +133,32 @@ public class StoryWritingTests extends AbstractBenchmark {
 			throws Exception {
 		String storyText_ = "This is a story.";
 		StoryAggregate story_ = StoryAggregate.build(_guid);
-		CommandBase command = new CommandBase<CreateStory>(new CreateStory(
-				_guid, storyText_, story_));
-		command.execute();
-		story_ = StoryAggregate.build(_guid);
-		command = new CommandBase<CreateStory>(new CreateStory(_guid,
-				storyText_, story_));
-		command.execute();
-		assertThat(story_, hasProperty("version", is(2)));
+		try {
+			CommandBase command = new CommandBase<CreateStory>(new CreateStory(
+					_guid, storyText_, story_));
+			command.execute();
+			story_ = StoryAggregate.build(_guid);
+			command = new CommandBase<CreateStory>(new CreateStory(_guid,
+					storyText_, story_));
+			command.execute();
+			fail("Should throw exception on creation of duplication story.");
+		} catch (StoryAlreadyCreatedException e) {
+			assertThat(
+					e.getMessage(),
+					is("The Story already created with the same GUID. Please create a new story with new GUID instead."));
+		}
 	}
 
 	@Test
-	@BenchmarkOptions(benchmarkRounds =4, warmupRounds = 0, concurrency = 4)
+	@BenchmarkOptions(benchmarkRounds = 4, warmupRounds = 0, concurrency = 4)
 	public void should_handle_concurrent_event_updates() throws Exception {
 		String storyText_ = "This is a story.";
 		StoryAggregate story_ = StoryAggregate.build(_guid);
 		Random random = new Random();
 		int seed = random.nextInt();
 		storyText_ = "Adding new story" + seed;
-		CommandBase command = new CommandBase<UpdateStoryText>(new UpdateStoryText(_guid,
-				storyText_, story_));
+		CommandBase command = new CommandBase<UpdateStoryText>(
+				new UpdateStoryText(_guid, storyText_, story_));
 		command.execute();
 		StoryAggregate testStory_ = null;
 		int version = story_.getVersion();
@@ -161,7 +169,7 @@ public class StoryWritingTests extends AbstractBenchmark {
 					hasProperty("storyText",
 							containsString(String.valueOf(seed))));
 		} else {
-//			assertThat(testStory_.getVersion(), greaterThan(version));
+			// assertThat(testStory_.getVersion(), greaterThan(version));
 		}
 	}
 
@@ -172,8 +180,8 @@ public class StoryWritingTests extends AbstractBenchmark {
 	public void should_read_the_current_state_of_story() {
 
 	}
-	
-	public void should_not_add_new_events_with_same_version(){
-		
+
+	public void should_not_add_new_events_with_same_version() {
+
 	}
 }
