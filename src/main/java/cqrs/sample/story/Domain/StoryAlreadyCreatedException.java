@@ -6,4 +6,8 @@ public class StoryAlreadyCreatedException extends Exception {
 		super(arg0);
 	}
 
+	public StoryAlreadyCreatedException() {
+		// TODO Auto-generated constructor stub
+	}
+
 }
